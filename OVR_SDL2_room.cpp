@@ -24,6 +24,9 @@
 
 //------------------------------------------------------------------------------
 
+/// The scene is defined as a collection of colored, axis-aligned boxes. Each
+/// has a minimum and maximum extent along X, Y, and Z, plus an RGB color.
+
 struct block
 {
     float x0;
@@ -277,19 +280,16 @@ struct block blocks[] = {
 
 //------------------------------------------------------------------------------
 
-struct vert
-{
-    vec3 p;
-    vec3 n;
-    vec3 c;
+/// Triangulate and append the vertices of a block face onto the vertex array.
+///
+/// @param p0     Position vector
+/// @param p1     Position vector
+/// @param p2     Position vector
+/// @param p3     Position vector
+/// @param n      Normal vector
+/// @param c      Color
 
-    vert(vec3 p, vec3 n, vec3 c) : p(p), n(n), c(c) { }
-};
-
-//------------------------------------------------------------------------------
-
-void make_face(std::vector<vert>& verts, vec3 p0, vec3 p1,
-                                         vec3 p2, vec3 p3, vec3 n, vec3 c)
+void OVR_SDL2_room::make_face(vec3 p0, vec3 p1, vec3 p2, vec3 p3, vec3 n, vec3 c)
 {
     verts.push_back(vert(p0, n, c));
     verts.push_back(vert(p1, n, c));
@@ -300,57 +300,128 @@ void make_face(std::vector<vert>& verts, vec3 p0, vec3 p1,
     verts.push_back(vert(p3, n, c));
 }
 
-void make_block(std::vector<vert>& verts, vec3 p0, vec3 p1, vec3 c)
+/// Append the vertices of an axis-aligned block onto the vertex array.
+///
+/// @param p0     Minimum position vector
+/// @param p1     Maximum position vector
+/// @param c      Color
+
+void OVR_SDL2_room::make_block(vec3 p0, vec3 p1, vec3 c)
 {
-    make_face(verts, vec3(p0[0], p0[1], p0[2]),
-                     vec3(p0[0], p1[1], p0[2]),
-                     vec3(p0[0], p1[1], p1[2]),
-                     vec3(p0[0], p0[1], p1[2]), vec3(1,  0,  0), c);
+    make_face(vec3(p1[0], p1[1], p1[2]),
+              vec3(p1[0], p0[1], p1[2]),
+              vec3(p1[0], p0[1], p0[2]),
+              vec3(p1[0], p1[1], p0[2]), vec3(+1, 0, 0), c);
 
-    make_face(verts, vec3(p1[0], p0[1], p1[2]),
-                     vec3(p1[0], p1[1], p1[2]),
-                     vec3(p1[0], p1[1], p0[2]),
-                     vec3(p1[0], p0[1], p0[2]), vec3(1,  0,  0), c);
+    make_face(vec3(p0[0], p1[1], p0[2]),
+              vec3(p0[0], p0[1], p0[2]),
+              vec3(p0[0], p0[1], p1[2]),
+              vec3(p0[0], p1[1], p1[2]), vec3(-1, 0, 0), c);
 
-    make_face(verts, vec3(p1[0], p0[1], p1[2]),
-                     vec3(p1[0], p0[1], p0[2]),
-                     vec3(p0[0], p0[1], p0[2]),
-                     vec3(p0[0], p0[1], p1[2]), vec3(0,  1,  0), c);
+    make_face(vec3(p0[0], p1[1], p0[2]),
+              vec3(p0[0], p1[1], p1[2]),
+              vec3(p1[0], p1[1], p1[2]),
+              vec3(p1[0], p1[1], p0[2]), vec3(0, +1, 0), c);
 
-    make_face(verts, vec3(p1[0], p1[1], p0[2]),
-                     vec3(p1[0], p1[1], p1[2]),
-                     vec3(p0[0], p1[1], p1[2]),
-                     vec3(p0[0], p1[1], p0[2]), vec3(0, -1,  0), c);
+    make_face(vec3(p0[0], p0[1], p1[2]),
+              vec3(p0[0], p0[1], p0[2]),
+              vec3(p1[0], p0[1], p0[2]),
+              vec3(p1[0], p0[1], p1[2]), vec3(0, -1, 0), c);
 
-    make_face(verts, vec3(p1[0], p0[1], p0[2]),
-                     vec3(p1[0], p1[1], p0[2]),
-                     vec3(p0[0], p1[1], p0[2]),
-                     vec3(p0[0], p0[1], p0[2]), vec3(0,  0,  1), c);
+    make_face(vec3(p0[0], p1[1], p1[2]),
+              vec3(p0[0], p0[1], p1[2]),
+              vec3(p1[0], p0[1], p1[2]),
+              vec3(p1[0], p1[1], p1[2]), vec3(0, 0, +1), c);
 
-    make_face(verts, vec3(p0[0], p0[1], p1[2]),
-                     vec3(p0[0], p1[1], p1[2]),
-                     vec3(p1[0], p1[1], p1[2]),
-                     vec3(p1[0], p0[1], p1[2]), vec3(0,  0, -1), c);
+    make_face(vec3(p1[0], p1[1], p0[2]),
+              vec3(p1[0], p0[1], p0[2]),
+              vec3(p0[0], p0[1], p0[2]),
+              vec3(p0[0], p1[1], p0[2]), vec3(0, 0, -1), c);
 }
+
+//------------------------------------------------------------------------------
+
+/// Initialize the room demo.
 
 OVR_SDL2_room::OVR_SDL2_room()
 {
-    std::vector<vert> verts;
+    const size_t stride = sizeof (vert);
 
-    for (int i = 0; i < sizeof (blocks) / sizeof (block); i++)
-        make_block(verts, vec3(blocks[i].x0, blocks[i].y0, blocks[i].z0),
-                          vec3(blocks[i].x1, blocks[i].y1, blocks[i].z1),
-                          vec3(blocks[i].r,  blocks[i].g,  blocks[i].b));
+    // Converting the array of colored blocks into a list of triangles.
+
+    for (int i = 0; i < sizeof (blocks) / sizeof (blocks[0]); i++)
+
+        make_block(vec3(blocks[i].x0, blocks[i].y0, blocks[i].z0),
+                   vec3(blocks[i].x1, blocks[i].y1, blocks[i].z1),
+                   vec3(blocks[i].r,  blocks[i].g,  blocks[i].b));
+
+    // Generate a vertex array and buffer object to hold these triangles.
+
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(    vao);
+
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, verts.size() * stride,
+                                 &verts.front(), GL_STATIC_DRAW);
+
+    // Initialize a shader to render the vertex array.
+
+    if ((program = init_program("vertex.glsl", "fragment.glsl")))
+    {
+        glUseProgram(program);
+
+        ProjectionMatrixLoc = glGetUniformLocation(program, "ProjectionMatrix");
+        ModelViewMatrixLoc  = glGetUniformLocation(program, "ModelViewMatrix");
+        NormalMatrixLoc     = glGetUniformLocation(program, "NormalMatrix");
+        LightPositionLoc    = glGetUniformLocation(program, "LightPosition");
+        AmbientLightLoc     = glGetUniformLocation(program, "AmbientLight");
+
+        GLint pLoc = glGetAttribLocation(program, "vPosition");
+        GLint nLoc = glGetAttribLocation(program, "vNormal");
+        GLint cLoc = glGetAttribLocation(program, "vColor");
+
+        glEnableVertexAttribArray(pLoc);
+        glEnableVertexAttribArray(nLoc);
+        glEnableVertexAttribArray(cLoc);
+
+        glVertexAttribPointer(pLoc, 3, GL_FLOAT, 0, stride, (const void *)  0);
+        glVertexAttribPointer(nLoc, 3, GL_FLOAT, 0, stride, (const void *) 12);
+        glVertexAttribPointer(cLoc, 3, GL_FLOAT, 0, stride, (const void *) 24);
+    }
 
     position = vec3(0.0, 4.0, 0.0);
+    ambient  = vec3(0.1, 0.1, 0.1);
+    light    = vec4(0.0, 7.0, 0.0, 1.0);
+
+    glClearColor(0.3f, 0.6f, 0.9f, 0.0f);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }
 
 OVR_SDL2_room::~OVR_SDL2_room()
 {
+    glDeleteProgram(program);
+
+    glDeleteBuffers     (1, &vbo);
+    glDeleteVertexArrays(1, &vao);
 }
 
 void OVR_SDL2_room::draw()
 {
+    mat4 P = projection();
+    mat4 V = view();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glUniformMatrix4fv(ProjectionMatrixLoc, 1, GL_TRUE, P);
+    glUniformMatrix4fv(ModelViewMatrixLoc,  1, GL_TRUE, V);
+    glUniformMatrix3fv(NormalMatrixLoc,     1, GL_TRUE, normal(V));
+    glUniform4fv      (LightPositionLoc,    1,          V * light);
+    glUniform3fv      (AmbientLightLoc,     1,          ambient);
+
+    glDrawArrays(GL_TRIANGLES, 0, verts.size());
 }
 
 //------------------------------------------------------------------------------

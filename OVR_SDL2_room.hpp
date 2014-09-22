@@ -38,6 +38,32 @@ protected:
     virtual void draw();
 
 private:
+
+    struct vert
+    {
+        vec3 p;
+        vec3 n;
+        vec3 c;
+        vert(vec3 p, vec3 n, vec3 c) : p(p), n(n), c(c) { }
+    };
+
+    void make_face (vec3, vec3, vec3, vec3, vec3, vec3);
+    void make_block(vec3, vec3, vec3);
+
+    std::vector<vert> verts;
+
+    GLuint vao;
+    GLuint vbo;
+    GLuint program;
+
+    GLint ProjectionMatrixLoc;
+    GLint ModelViewMatrixLoc;
+    GLint NormalMatrixLoc;
+    GLint LightPositionLoc;
+    GLint AmbientLightLoc;
+
+    vec3 ambient;
+    vec4 light;
 };
 
 //------------------------------------------------------------------------------
