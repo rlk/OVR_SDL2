@@ -36,3 +36,9 @@ void OVR_SDL2_obj::draw()
 
 //------------------------------------------------------------------------------
 
+int main(int argc, char **argv)
+{
+    OVR_SDL2_obj app;
+    app.run();
+    return 0;
+}
