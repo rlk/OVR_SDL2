@@ -24,6 +24,8 @@
 #include <SDL2/SDL.h>
 #include "GLFundamentals.hpp"
 
+using namespace gl;
+
 //------------------------------------------------------------------------------
 
 class OVR_SDL2_app

@@ -34,7 +34,7 @@ OVR_SDL2_nav::~OVR_SDL2_nav()
 
 void OVR_SDL2_nav::step()
 {
-    gl::mat3 N = gl::normal(gl::inverse(view()));
+    mat3 N = normal(inverse(view()));
     position = position + N * velocity / 30.0;
 }
 
@@ -101,9 +101,9 @@ void OVR_SDL2_nav::game_axis(int axis, float value)
 
 /// Return the current view matrix.
 
-gl::mat4 OVR_SDL2_nav::view() const
+mat4 OVR_SDL2_nav::view() const
 {
-    return gl::xrotation(gl::to_radians(rotation)) * gl::translation(-position);
+    return xrotation(to_radians(rotation)) * translation(-position);
 }
 
 //------------------------------------------------------------------------------

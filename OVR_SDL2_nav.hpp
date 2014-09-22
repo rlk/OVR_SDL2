@@ -44,11 +44,11 @@ protected:
     virtual void game_button (int, bool);
     virtual void game_axis   (int, float);
 
-    gl::mat4 view() const;
+    mat4 view() const;
 
-    gl::vec3 position;
-    gl::vec3 velocity;
-    float    rotation;
+    vec3  position;
+    vec3  velocity;
+    float rotation;
 };
 
 //------------------------------------------------------------------------------
