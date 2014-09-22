@@ -53,6 +53,9 @@ protected:
     virtual void game_button (int, bool);
     virtual void game_axis   (int, float);
 
+    virtual mat4 projection() const;
+    virtual mat4 view()       const;
+
     bool running;
 
 private:

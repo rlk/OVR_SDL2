@@ -99,11 +99,14 @@ void OVR_SDL2_nav::game_axis(int axis, float value)
 {
 }
 
+//------------------------------------------------------------------------------
+
 /// Return the current view matrix.
 
 mat4 OVR_SDL2_nav::view() const
 {
-    return xrotation(to_radians(rotation)) * translation(-position);
+    return OVR_SDL2_app::view() * yrotation(to_radians(rotation))
+                                * translation(-position);
 }
 
 //------------------------------------------------------------------------------

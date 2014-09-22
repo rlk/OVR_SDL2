@@ -51,6 +51,8 @@ OVR_SDL2_app::OVR_SDL2_app()
             context = SDL_GL_CreateContext(window);
             running = true;
 
+            SDL_SetRelativeMouseMode(SDL_TRUE);
+
 #ifdef GLEW_VERSION
             glewExperimental = GL_TRUE;
             glewInit();
@@ -101,7 +103,7 @@ void OVR_SDL2_app::dispatch(SDL_Event& e)
         case SDL_MOUSEBUTTONUP:
             mouse_button(e.button.button, false); break;
         case SDL_MOUSEMOTION:
-            mouse_motion(e.motion.x, e.motion.y); break;
+            mouse_motion(e.motion.xrel, e.motion.yrel); break;
         case SDL_MOUSEWHEEL:
             mouse_wheel(e.wheel.x, e.wheel.y); break;
         case SDL_JOYAXISMOTION:
@@ -172,6 +174,27 @@ void OVR_SDL2_app::game_button(int button, bool down)
 
 void OVR_SDL2_app::game_axis(int axis, float value)
 {
+}
+
+//------------------------------------------------------------------------------
+
+/// Return the current projection matrix.
+
+mat4 OVR_SDL2_app::projection() const
+{
+    int w;
+    int h;
+
+    SDL_GetWindowSize(window, &w, &h);
+
+    return perspective(to_radians(45.0), float(w) / float(h), 0.1, 100.0);
+}
+
+/// Return the current view matrix.
+
+mat4 OVR_SDL2_app::view() const
+{
+    return mat4();
 }
 
 //------------------------------------------------------------------------------

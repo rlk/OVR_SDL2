@@ -44,7 +44,7 @@ protected:
     virtual void game_button (int, bool);
     virtual void game_axis   (int, float);
 
-    mat4 view() const;
+    virtual mat4 view() const;
 
     vec3  position;
     vec3  velocity;
