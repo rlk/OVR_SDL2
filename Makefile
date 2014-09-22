@@ -14,9 +14,14 @@ ifeq ($(shell uname), Linux)
 	LIB= -lSDL2 -lGLEW -lGL -lm
 endif
 
-# Link the executable
+# Link the executables
 
-OVR_SDL2_obj : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_obj.o main.o
+all : OVR_SDL2_obj OVR_SDL2_room
+
+OVR_SDL2_obj  : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_obj.o
+	$(CXX) $(OPT) -o $@ $^ $(LIB)
+
+OVR_SDL2_room : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_room.o
 	$(CXX) $(OPT) -o $@ $^ $(LIB)
 
 # Compile a module
@@ -27,4 +32,4 @@ OVR_SDL2_obj : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_obj.o main.o
 # Clean up all binaries
 
 clean :
-	$(RM) OVR_SDL2_obj *.o
+	$(RM) OVR_SDL2_obj OVR_SDL2_room *.o
