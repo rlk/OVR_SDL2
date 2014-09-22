@@ -1,2 +1,3 @@
 *.o
-
+OVR_SDL2_obj
+OVR_SDL2_room
