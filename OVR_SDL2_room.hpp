@@ -44,11 +44,12 @@ private:
         vec3 p;
         vec3 n;
         vec3 c;
-        vert(vec3 p, vec3 n, vec3 c) : p(p), n(n), c(c) { }
+        vec3 x;
+        vert(vec3 p, vec3 n, vec3 c, vec3 x) : p(p), n(n), c(c), x(x) { }
     };
 
-    void make_face (vec3, vec3, vec3, vec3, vec3, vec3);
-    void make_block(vec3, vec3, vec3);
+    void make_face (vec3, vec3, vec3, vec3, vec3, vec3, vec3);
+    void make_block(vec3, vec3, vec3, vec3);
 
     std::vector<vert> verts;
 
