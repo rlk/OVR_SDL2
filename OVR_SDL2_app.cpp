@@ -24,9 +24,9 @@
 
 /// Initialize an SDL OpenGL window.
 
-OVR_SDL2_app::OVR_SDL2_app()
+OVR_SDL2_app::OVR_SDL2_app() : window(0)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) == 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) == 0)
     {
         int x = SDL_WINDOWPOS_CENTERED;
         int y = SDL_WINDOWPOS_CENTERED;
@@ -48,9 +48,10 @@ OVR_SDL2_app::OVR_SDL2_app()
 
         if ((window = SDL_CreateWindow("OVR_SDL2", x, y, w, h, f)))
         {
-            context = SDL_GL_CreateContext(window);
-            running = true;
+            context  = SDL_GL_CreateContext(window);
+            running  = true;
 
+            SDL_GameControllerEventState(SDL_ENABLE);
             SDL_SetRelativeMouseMode(SDL_TRUE);
 
 #ifdef GLEW_VERSION
@@ -106,12 +107,16 @@ void OVR_SDL2_app::dispatch(SDL_Event& e)
             mouse_motion(e.motion.xrel, e.motion.yrel); break;
         case SDL_MOUSEWHEEL:
             mouse_wheel(e.wheel.x, e.wheel.y); break;
-        case SDL_JOYAXISMOTION:
-            game_axis(e.jaxis.axis, e.jaxis.value / 32768.f); break;
-        case SDL_JOYBUTTONDOWN:
-            game_button(e.jbutton.button, true);  break;
-        case SDL_JOYBUTTONUP:
-            game_button(e.jbutton.button, false); break;
+        case SDL_CONTROLLERAXISMOTION:
+            game_axis(e.caxis.which, e.caxis.axis, e.caxis.value / 32768.f); break;
+        case SDL_CONTROLLERBUTTONDOWN:
+            game_button(e.caxis.which, e.cbutton.button, true);  break;
+        case SDL_CONTROLLERBUTTONUP:
+            game_button(e.caxis.which, e.cbutton.button, false); break;
+        case SDL_CONTROLLERDEVICEADDED:
+            game_connect(e.cdevice.which, true); break;
+        case SDL_CONTROLLERDEVICEREMOVED:
+            game_connect(e.cdevice.which, false); break;
         case SDL_QUIT:
             running = false; break;
     }
@@ -164,15 +169,30 @@ void OVR_SDL2_app::mouse_motion(int x, int y)
 {
 }
 
+/// Handle gamepad connection or disconnection
+
+void OVR_SDL2_app::game_connect(int device, bool connected)
+{
+    controller.resize(device + 1);
+
+    if (controller[device])
+        SDL_GameControllerClose(controller[device]);
+
+    if (connected)
+        controller[device] = SDL_GameControllerOpen(device);
+    else
+        controller[device] = 0;
+}
+
 /// Handle gamepad button press or release.
 
-void OVR_SDL2_app::game_button(int button, bool down)
+void OVR_SDL2_app::game_button(int device, int button, bool down)
 {
 }
 
 /// Handle gamepad axis motion.
 
-void OVR_SDL2_app::game_axis(int axis, float value)
+void OVR_SDL2_app::game_axis(int device, int axis, float value)
 {
 }
 

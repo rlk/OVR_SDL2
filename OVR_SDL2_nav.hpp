@@ -41,8 +41,8 @@ protected:
     virtual void mouse_button(int, bool);
     virtual void mouse_motion(int, int);
     virtual void mouse_wheel (int, int);
-    virtual void game_button (int, bool);
-    virtual void game_axis   (int, float);
+    virtual void game_button (int, int, bool);
+    virtual void game_axis   (int, int, float);
 
     virtual mat4 view() const;
 

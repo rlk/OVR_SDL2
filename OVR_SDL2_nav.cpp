@@ -35,7 +35,7 @@ OVR_SDL2_nav::~OVR_SDL2_nav()
 void OVR_SDL2_nav::step()
 {
     mat3 N = normal(inverse(view()));
-    position = position + N * velocity / 30.0;
+    position = position + N * velocity / 20.0;
 }
 
 /// Handle a key press or release.
@@ -84,19 +84,21 @@ void OVR_SDL2_nav::mouse_wheel(int dx, int dy)
 
 void OVR_SDL2_nav::mouse_motion(int dx, int dy)
 {
-    rotation += dx;
+    rotation += 0.5 * dx;
 }
 
 /// Handle gamepad button press or release.
 
-void OVR_SDL2_nav::game_button(int button, bool down)
+void OVR_SDL2_nav::game_button(int device, int button, bool down)
 {
+    printf("button %d %d %d\n", device, button, down);
 }
 
 /// Handle gamepad axis motion.
 
-void OVR_SDL2_nav::game_axis(int axis, float value)
+void OVR_SDL2_nav::game_axis(int device, int axis, float value)
 {
+    printf("axis %d %d %f\n", device, axis, value);
 }
 
 //------------------------------------------------------------------------------

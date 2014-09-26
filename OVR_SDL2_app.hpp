@@ -21,8 +21,10 @@
 #ifndef OVR_SDL2_APP_HPP
 #define OVR_SDL2_APP_HPP
 
+#include <vector>
 #include <SDL2/SDL.h>
 #include "GLFundamentals.hpp"
+
 
 using namespace gl;
 
@@ -50,8 +52,9 @@ protected:
     virtual void mouse_button(int, bool);
     virtual void mouse_motion(int, int);
     virtual void mouse_wheel (int, int);
-    virtual void game_button (int, bool);
-    virtual void game_axis   (int, float);
+    virtual void game_connect(int, bool);
+    virtual void game_button (int, int, bool);
+    virtual void game_axis   (int, int, float);
 
     virtual mat4 projection() const;
     virtual mat4 view()       const;
@@ -62,6 +65,8 @@ private:
 
     SDL_Window   *window;
     SDL_GLContext context;
+
+    std::vector<SDL_GameController *> controller;
 };
 
 //------------------------------------------------------------------------------
