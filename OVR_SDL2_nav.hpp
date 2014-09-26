@@ -38,17 +38,26 @@ protected:
     virtual void step();
 
     virtual void keyboard    (int, bool, bool);
-    virtual void mouse_button(int, bool);
     virtual void mouse_motion(int, int);
-    virtual void mouse_wheel (int, int);
     virtual void game_button (int, int, bool);
     virtual void game_axis   (int, int, float);
 
     virtual mat4 view() const;
 
-    vec3  position;
-    vec3  velocity;
-    float rotation;
+    vec3   position;
+    float  rotation;
+
+private:
+
+    vec3  dposition;
+    float drotation;
+
+    bool  move_L;
+    bool  move_R;
+    bool  move_D;
+    bool  move_U;
+    bool  move_F;
+    bool  move_B;
 };
 
 //------------------------------------------------------------------------------
