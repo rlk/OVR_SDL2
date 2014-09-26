@@ -1,17 +1,24 @@
 OPT= -g -Wall
+OVR= /usr/local/OculusSDK/LibOVR
 
 # Configure for OS X
 
 ifeq ($(shell uname), Darwin)
 	CXX= c++ -F/Library/Frameworks
-	LIB= -framework SDL2 -framework OpenGL
+	INC= -I$(OVR)/Include -I$(OVR)/Src
+	LIB= -L$(OVR)/Lib/Mac/Release -lovr -framework SDL2 \
+										-framework IOKit \
+										-framework CoreFoundation \
+										-framework CoreGraphics \
+										-framework OpenGL
 endif
 
 # Configure for Linux
 
 ifeq ($(shell uname), Linux)
 	CXX= g++
-	LIB= -lSDL2 -lGLEW -lGL -lm
+	INC= -I$(OVR)/Include -I$(OVR)/Src
+	LIB= -L$(OVR)/Lib/Linux/Release -lovr -lSDL2 -lGLEW -lGL -lm
 endif
 
 # Link the executables
@@ -27,7 +34,7 @@ OVR_SDL2_room : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_room.o
 # Compile a module
 
 .cpp.o :
-	$(CXX) $(OPT) -c $<
+	$(CXX) $(OPT) $(INC) -c $<
 
 # Clean up all binaries
 
