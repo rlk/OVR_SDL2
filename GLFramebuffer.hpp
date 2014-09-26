@@ -31,6 +31,11 @@ namespace gl
 {
     struct framebuffer
     {
+        /// Initialize an OpenGL framebuffer object with color and depth.
+        ///
+        /// @param w  Buffer width
+        /// @param h  Buffer height
+
         framebuffer(int w, int h) : width(w), height(h)
         {
             const GLenum F = GL_FRAMEBUFFER;
@@ -79,6 +84,8 @@ namespace gl
             glBindTexture    (T, 0);
         }
 
+        /// Release all OpenGL resources.
+
         ~framebuffer()
         {
             glDeleteFramebuffers(1, &frame);
@@ -86,7 +93,9 @@ namespace gl
             glDeleteTextures    (1, &depth);
         }
 
-        void check()
+        /// Query the framebuffer status and throw any incompleteness error.
+
+        void check() const
         {
             switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
             {
@@ -107,17 +116,19 @@ namespace gl
             }
         }
 
-        void bind()
+        /// Bind hte framebuffer and configure the viewport to fill it.
+
+        void bind() const
         {
             glBindFramebuffer(GL_FRAMEBUFFER, frame);
             glViewport(0, 0, width, height);
         }
 
-        GLsizei width;
-        GLsizei height;
-        GLuint  color;
-        GLuint  depth;
-        GLuint  frame;
+        GLsizei width;   ///< Buffer width
+        GLsizei height;  ///< Buffer height
+        GLuint  color;   ///< Color texture object
+        GLuint  depth;   ///< Depth texture object
+        GLuint  frame;   ///< Frame buffer object
     };
 }
 
