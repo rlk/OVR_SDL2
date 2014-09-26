@@ -53,6 +53,8 @@ OVR_SDL2_app::~OVR_SDL2_app()
 
 //------------------------------------------------------------------------------
 
+/// Initialize an SDL window and GL context with the given position and size.
+
 bool OVR_SDL2_app::init_SDL(int x, int y, int w, int h)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) == 0)
@@ -88,6 +90,11 @@ bool OVR_SDL2_app::init_SDL(int x, int y, int w, int h)
     return false;
 }
 
+/// Initialize the Oculus SDK.
+///
+/// Enable all tracking capability and fall back on a DK1 debug configuration
+/// if no HMD is available.
+
 bool OVR_SDL2_app::init_OVR()
 {
     ovr_Initialize();
@@ -104,8 +111,15 @@ bool OVR_SDL2_app::init_OVR()
     return true;
 }
 
+/// Configure the Oculus SDK renderer.
+///
+/// This requires the presence of OpenGL state, so it much be performed AFTER
+/// the SDL window has been created.
+
 void OVR_SDL2_app::conf_OVR()
 {
+    // Configure the renderer with all features.
+
     ovrGLConfig cfg;
 
     memset(&cfg, 0, sizeof (ovrGLConfig));
@@ -118,6 +132,8 @@ void OVR_SDL2_app::conf_OVR()
                                               | ovrDistortionCap_TimeWarp
                                               | ovrDistortionCap_Overdrive,
                                                 hmd->DefaultEyeFov, erd);
+
+    // Initialize the off-screen render buffers.
 
     ovrSizei size[2];
 
@@ -150,10 +166,16 @@ void OVR_SDL2_app::run()
 
     while (running)
     {
+        // Dispatch all pending SDL events.
+
         while (SDL_PollEvent(&e))
             dispatch(e);
 
+        // Let the application animate.
+
         step();
+
+        // Render both views. Let the Oculus SDK display them on-screen.
 
         ovrHmd_BeginFrame(hmd, 0);
         {
@@ -265,6 +287,8 @@ void OVR_SDL2_app::game_axis(int device, int axis, float value)
 }
 
 //------------------------------------------------------------------------------
+
+/// Convert an OVR matrix to a GLFundamentals matrix.
 
 static mat4 getMatrix4f(const OVR::Matrix4f& m)
 {
