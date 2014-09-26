@@ -44,8 +44,8 @@ protected:
 
     virtual mat4 view() const;
 
-    vec3   position;
-    float  rotation;
+    vec3  position;
+    float rotation;
 
 private:
 

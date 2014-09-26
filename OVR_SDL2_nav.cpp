@@ -54,7 +54,7 @@ void OVR_SDL2_nav::step()
     if (length(v) > 1.0)
         v = normalize(v);
 
-    position = position + N * v / 10.0;
+    position = position + N * v / 30.0;
     rotation = rotation + drotation;
 }
 
@@ -62,6 +62,8 @@ void OVR_SDL2_nav::step()
 
 void OVR_SDL2_nav::keyboard(int key, bool down, bool repeat)
 {
+    OVR_SDL2_app::keyboard(key, down, repeat);
+
     if (!repeat)
     {
         switch (key)
@@ -74,7 +76,6 @@ void OVR_SDL2_nav::keyboard(int key, bool down, bool repeat)
             case SDL_SCANCODE_S:     move_B = down; return;
         }
     }
-    OVR_SDL2_app::keyboard(key, down, repeat);
 }
 
 /// Handle mouse pointer motion.
