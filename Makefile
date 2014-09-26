@@ -33,3 +33,10 @@ OVR_SDL2_room : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_room.o
 
 clean :
 	$(RM) OVR_SDL2_obj OVR_SDL2_room *.o
+
+# Define module dependencies
+
+OVR_SDL2_app.o  : OVR_SDL2_app.hpp
+OVR_SDL2_nav.o  : OVR_SDL2_app.hpp OVR_SDL2_nav.hpp
+OVR_SDL2_obj.o  : OVR_SDL2_app.hpp OVR_SDL2_nav.hpp OVR_SDL2_obj.hpp
+OVR_SDL2_room.o : OVR_SDL2_app.hpp OVR_SDL2_nav.hpp OVR_SDL2_room.hpp
