@@ -22,9 +22,15 @@
 #define OVR_SDL2_APP_HPP
 
 #include <vector>
-#include <SDL2/SDL.h>
-#include "GLFundamentals.hpp"
 
+#undef static_assert
+#include <OVR.h>
+#include <OVR_CAPI_GL.h>
+
+#include <SDL2/SDL.h>
+
+#include "GLFundamentals.hpp"
+#include "GLFramebuffer.hpp"
 
 using namespace gl;
 
@@ -44,9 +50,8 @@ protected:
 
     void dispatch(SDL_Event&);
 
-    virtual void draw();
-    virtual void swap();
-    virtual void step();
+    virtual void draw() { }
+    virtual void step() { }
 
     virtual void keyboard    (int, bool, bool);
     virtual void mouse_button(int, bool);
@@ -63,8 +68,19 @@ protected:
 
 private:
 
-    SDL_Window   *window;
+    bool init_SDL(int, int, int, int);
+    bool init_OVR();
+    void conf_OVR();
+
+    ovrHmd            hmd;
+    ovrEyeType        eye;
+    ovrPosef         pose[2];
+    ovrEyeRenderDesc  erd[2];
+    ovrTexture        tex[2];
+    framebuffer   *buffer[2];
+    SDL_Window    *window;
     SDL_GLContext context;
+
 
     std::vector<SDL_GameController *> controller;
 };
