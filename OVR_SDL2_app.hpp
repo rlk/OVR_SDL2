@@ -72,6 +72,8 @@ private:
     bool init_OVR();
     void conf_OVR();
 
+    void dismiss_warning();
+
     ovrHmd            hmd;
     ovrEyeType        eye;
     ovrPosef         pose[2];
@@ -80,7 +82,6 @@ private:
     framebuffer   *buffer[2];
     SDL_Window    *window;
     SDL_GLContext context;
-
 
     std::vector<SDL_GameController *> controller;
 };

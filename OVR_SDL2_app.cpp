@@ -230,12 +230,7 @@ void OVR_SDL2_app::dispatch(SDL_Event& e)
 
 void OVR_SDL2_app::keyboard(int key, bool down, bool repeat)
 {
-    ovrHSWDisplayState warning;
-
-    ovrHmd_GetHSWDisplayState(hmd, &warning);
-
-    if (warning.Displayed)
-        ovrHmd_DismissHSWDisplay(hmd);
+    dismiss_warning();
 
     if (key == SDL_SCANCODE_ESCAPE && down == false)
         running = false;
@@ -245,6 +240,7 @@ void OVR_SDL2_app::keyboard(int key, bool down, bool repeat)
 
 void OVR_SDL2_app::mouse_button(int button, bool down)
 {
+    dismiss_warning();
 }
 
 /// Handle mouse wheel rotation.
@@ -278,6 +274,7 @@ void OVR_SDL2_app::game_connect(int device, bool connected)
 
 void OVR_SDL2_app::game_button(int device, int button, bool down)
 {
+    dismiss_warning();
 }
 
 /// Handle gamepad axis motion.
@@ -324,3 +321,13 @@ mat4 OVR_SDL2_app::view() const
 }
 
 //------------------------------------------------------------------------------
+
+void OVR_SDL2_app::dismiss_warning()
+{
+    ovrHSWDisplayState state;
+
+    ovrHmd_GetHSWDisplayState(hmd, &state);
+
+    if (state.Displayed)
+        ovrHmd_DismissHSWDisplay(hmd);
+}
