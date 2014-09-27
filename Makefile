@@ -25,7 +25,7 @@ endif
 
 all : OVR_SDL2_obj OVR_SDL2_room
 
-OVR_SDL2_obj  : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_obj.o
+OVR_SDL2_obj  : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_obj.o obj.o
 	$(CXX) $(OPT) -o $@ $^ $(LIB)
 
 OVR_SDL2_room : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_room.o

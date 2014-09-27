@@ -22,6 +22,7 @@
 #define OVR_SDL2_OBJ_HPP
 
 #include "OVR_SDL2_nav.hpp"
+#include "obj.h"
 
 //------------------------------------------------------------------------------
 
@@ -29,7 +30,7 @@ class OVR_SDL2_obj : public OVR_SDL2_nav
 {
 public:
 
-    OVR_SDL2_obj();
+    OVR_SDL2_obj(const char *);
 
     virtual ~OVR_SDL2_obj();
 
@@ -38,6 +39,15 @@ protected:
     virtual void draw();
 
 private:
+
+    obj   *object;
+    GLuint program;
+
+    GLint ProjectionMatrixLocation;
+    GLint ModelViewMatrixLocation;
+    GLint NormalMatrixLocation;
+    GLint LightPositionLocation;
+    GLint AmbientLightLocation;
 };
 
 //------------------------------------------------------------------------------
