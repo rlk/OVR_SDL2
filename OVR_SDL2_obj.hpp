@@ -21,6 +21,8 @@
 #ifndef OVR_SDL2_OBJ_HPP
 #define OVR_SDL2_OBJ_HPP
 
+#include <map>
+
 #include "OVR_SDL2_nav.hpp"
 #include "obj.h"
 
@@ -30,7 +32,7 @@ class OVR_SDL2_obj : public OVR_SDL2_nav
 {
 public:
 
-    OVR_SDL2_obj(const char *);
+    OVR_SDL2_obj(int, char **);
 
     virtual ~OVR_SDL2_obj();
 
@@ -40,7 +42,6 @@ protected:
 
 private:
 
-    obj   *object;
     GLuint program;
 
     GLint ProjectionMatrixLocation;
@@ -48,6 +49,19 @@ private:
     GLint NormalMatrixLocation;
     GLint LightPositionLocation;
     GLint AmbientLightLocation;
+
+    GLint NormalTextureLocation;
+    GLint DiffuseTextureLocation;
+    GLint SpecularTextureLocation;
+
+    GLint vTangentLocation;
+    GLint vNormalLocation;
+    GLint vTexCoordLocation;
+    GLint vPositionLocation;
+
+    std::map<obj *, vec3> objects;
+
+    vec3 offset;
 };
 
 //------------------------------------------------------------------------------
