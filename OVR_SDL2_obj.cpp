@@ -41,8 +41,10 @@ const char *vert_src = R"(
 
     void main()
     {
+        vec4 vLight = LightPosition - vPosition;
+
         fView     = vec3(ModelViewMatrix * vPosition);
-        fLight    = vec3(ModelViewMatrix * LightPosition);
+        fLight    = vec3(ModelViewMatrix * vLight);
         fNormal   = vec3(NormalMatrix    * vNormal);
         fTexCoord = vTexCoord;
 
@@ -53,7 +55,7 @@ const char *vert_src = R"(
 const char *frag_src = R"(
     #version 150
 
-    uniform vec3 AmbientLight;
+    uniform vec4 AmbientLight;
 
     uniform vec4 DiffuseColor;
     uniform vec4 SpecularColor;
@@ -77,10 +79,11 @@ const char *frag_src = R"(
 
         // Determine the per-fragment lighting vectors.
 
-        vec3 N = normalize(fNormal);
-        vec3 L = normalize(fLight);
-        vec3 V = normalize(fView);
-        vec3 R = reflect(L, N);
+        vec3  N = normalize(fNormal);
+        vec3  L = normalize(fLight);
+        vec3  V = normalize(fView);
+        float d = length(fView);
+        vec3  R = reflect(L, N);
 
         // Compute the diffuse shading.
 
@@ -89,7 +92,9 @@ const char *frag_src = R"(
 
         // Calculate the fragment color.
 
-        fOutput = vec4(AmbientLight * cD + kd * cD + ks * cS, 1.0);
+        float f = clamp(4.0 / d, 0.0, 1.0);
+
+        fOutput = vec4((AmbientLight.rgb * cD + kd * cD + ks * cS) * f, 1.0);
     }
 )";
 
@@ -123,51 +128,13 @@ OVR_SDL2_obj::OVR_SDL2_obj(int argc, char **argv) : program(0)
         vTexCoordLoc = glGetAttribLocation(program, "vTexCoord");
         vPositionLoc = glGetAttribLocation(program, "vPosition");
 
-        // Load each of the OBJ models named on the command line.
+        // Configure the scene.
 
-        float w = 0;
-        float x = 0;
-        float y = 0;
-        float z = 0;
-
-        for (int i = 1; i < argc; i++)
-        {
-            if (obj *o = obj_create(argv[i]))
-            {
-                // Configure the object's vertex attributes.
-
-                obj_set_vert_loc(o, -1, vNormalLoc,
-                                        vTexCoordLoc,
-                                        vPositionLoc);
-
-                obj_set_prop_loc(o, OBJ_KD, DiffuseColorLoc,  DiffuseTextureLoc,  -1);
-                obj_set_prop_loc(o, OBJ_KS, SpecularColorLoc, SpecularTextureLoc, -1);
-
-                // Position the object at the origin on the XZ plane.
-
-                float b[6];
-
-                obj_bound(o, b);
-
-                objects[o] = vec3(x - b[0], -b[1], -0.5 * (b[5] + b[2]));
-
-                w = x + (b[3] - b[0]);
-                x = x + (b[3] - b[0]) * 1.25;
-
-                y = std::max(y, b[4] - b[1]);
-                z = std::max(z, b[5] - b[2]);
-            }
-        }
-
-        // Position the scene and default viewpoint.
-
-        offset   = vec3(-0.5 * w, 0.0, 0.0);
-        position = vec3(0.0, y, z);
-
-        // Configure the lights.
+        init_objects(argc, argv);
+        init_background();
 
         glUniform4f(AmbientLightLoc,  0.2, 0.2, 0.2, 1.0);
-        glUniform4f(LightPositionLoc, 0.2, 0.1, 0.2, 0.0);
+        glUniform4f(LightPositionLoc, 0.0, 3.0, 3.0, 1.0);
 
         glUseProgram(0);
     }
@@ -180,6 +147,8 @@ OVR_SDL2_obj::OVR_SDL2_obj(int argc, char **argv) : program(0)
 
 OVR_SDL2_obj::~OVR_SDL2_obj()
 {
+    for (auto i : objects)
+        obj_delete(i.first);
 }
 
 void OVR_SDL2_obj::draw()
@@ -187,8 +156,9 @@ void OVR_SDL2_obj::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(program);
-
     glUniformMatrix4fv(ProjectionMatrixLoc, 1, GL_TRUE, projection());
+
+    // Render all objects.
 
     for (auto i : objects)
     {
@@ -200,8 +170,140 @@ void OVR_SDL2_obj::draw()
         obj_render(i.first);
     }
 
+    // Unbind our state.
+
     glBindVertexArray(0);
     glUseProgram(0);
+}
+
+//------------------------------------------------------------------------------
+
+/// Load a series of OBJ files named on the command line. Configure them for
+/// rendering with the current program. Arrange theo bjects along the X axis,
+/// center the scene on the origin, and move the camera to a reasonable
+/// starting position.
+
+void OVR_SDL2_obj::init_objects(int argc, char **argv)
+{
+    float w = 0;
+    float x = 0;
+    float y = 0;
+    float z = 0;
+
+    // Loop over the command line argument array.
+
+    for (int i = 1; i < argc; i++)
+    {
+        // Load the named OBJ.
+
+        if (obj *o = obj_create(argv[i]))
+        {
+            // Configure the object's vertex attributes.
+
+            obj_set_vert_loc(o, -1, vNormalLoc,
+                                    vTexCoordLoc,
+                                    vPositionLoc);
+
+            obj_set_prop_loc(o, OBJ_KD, DiffuseColorLoc,  DiffuseTextureLoc,  -1);
+            obj_set_prop_loc(o, OBJ_KS, SpecularColorLoc, SpecularTextureLoc, -1);
+
+            // Position the object along the X axis.
+
+            float b[6];
+
+            obj_bound(o, b);
+
+            objects[o] = vec3(x - b[0], -b[1], -0.5 * (b[5] + b[2]));
+
+            w = x + (b[3] - b[0]);
+            x = x + (b[3] - b[0]) * 1.25;
+
+            y = std::max(y, b[4] - b[1]);
+            z = std::max(z, b[5] - b[2]);
+        }
+    }
+
+    // Position the scene and camera.
+
+    offset   = vec3(-0.5 * w, 0.0, 0.0);
+    position = vec3(0.0, y, z);
+}
+
+/// Generate a checkerboard background. For simplicity, the OBJ module.
+
+void OVR_SDL2_obj::init_background()
+{
+    if (obj *o = obj_create(0))
+    {
+        float v[3] = { 0, 0, 0 };
+        float n[3] = { 0, 1, 0 };
+
+        int m = 48;
+
+        // Generate a grid of vertices.
+
+        for     (int i = 0; i <= m; i++)
+            for (int j = 0; j <= m; j++)
+            {
+                int k = obj_add_vert(o);
+
+                v[0] = j - 0.5 * m;
+                v[2] = i - 0.5 * m;
+
+                obj_set_vert_v(o, k, v);
+                obj_set_vert_n(o, k, n);
+            }
+
+        // Generate a pair of materials, one for each tile color.
+
+        int ma = obj_add_mtrl(o);
+        int mb = obj_add_mtrl(o);
+
+        float ca[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+        float cb[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+
+        obj_set_mtrl_c(o, ma, OBJ_KD, ca);
+        obj_set_mtrl_c(o, mb, OBJ_KD, cb);
+
+        // Generate a pair of surfaces, one for each material.
+
+        int a = obj_add_surf(o);
+        int b = obj_add_surf(o);
+
+        obj_set_surf(o, a, ma);
+        obj_set_surf(o, b, mb);
+
+        // Generate a mesh of triangles connecting the vertices.
+
+        for     (int i = 0; i < m; ++i)
+            for (int j = 0; j < m; ++j)
+            {
+                int k[3], c = (i % 2 == j % 2) ? a : b;
+
+                k[0] = (i    ) * (m + 1) + (j    );
+                k[1] = (i    ) * (m + 1) + (j + 1);
+                k[2] = (i + 1) * (m + 1) + (j + 1);
+
+                obj_set_poly(o, c, obj_add_poly(o, c), k);
+
+                k[0] = (i + 1) * (m + 1) + (j + 1);
+                k[1] = (i + 1) * (m + 1) + (j    );
+                k[2] = (i    ) * (m + 1) + (j    );
+
+                obj_set_poly(o, c, obj_add_poly(o, c), k);
+            }
+
+        // Configure the object's vertex attributes.
+
+        obj_set_vert_loc(o, -1, vNormalLoc,
+                                vTexCoordLoc,
+                                vPositionLoc);
+
+        obj_set_prop_loc(o, OBJ_KD, DiffuseColorLoc,  DiffuseTextureLoc,  -1);
+        obj_set_prop_loc(o, OBJ_KS, SpecularColorLoc, SpecularTextureLoc, -1);
+
+        objects[o] = vec3(0.0, 0.0, 0.0);
+    }
 }
 
 //------------------------------------------------------------------------------

@@ -59,6 +59,9 @@ private:
     GLint vTexCoordLoc;
     GLint vPositionLoc;
 
+    void init_objects(int, char **);
+    void init_background();
+
     std::map<obj *, vec3> objects;
 
     vec3 offset;
