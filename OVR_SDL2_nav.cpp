@@ -41,7 +41,7 @@ OVR_SDL2_nav::~OVR_SDL2_nav()
 
 void OVR_SDL2_nav::step()
 {
-    mat3 N = normal(inverse(view()));
+    mat3 N = normal(inverse(yrotation(to_radians(rotation))));
     vec3 v = dposition;
 
     if (move_L) v = v + vec3(-1, 0, 0);
