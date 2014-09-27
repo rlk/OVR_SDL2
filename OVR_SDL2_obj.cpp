@@ -92,9 +92,11 @@ const char *frag_src = R"(
 
         // Calculate the fragment color.
 
-        float f = clamp(4.0 / d, 0.0, 1.0);
+        vec3 f = AmbientLight.rgb * cD + kd * cD + ks * cS;
 
-        fOutput = vec4((AmbientLight.rgb * cD + kd * cD + ks * cS) * f, 1.0);
+        float fog = clamp(2.0 - 0.1 * d, 0.0, 1.0);
+
+        fOutput = vec4(mix(AmbientLight.rgb, f, fog), 1.0);
     }
 )";
 
@@ -133,8 +135,8 @@ OVR_SDL2_obj::OVR_SDL2_obj(int argc, char **argv) : program(0)
         init_objects(argc, argv);
         init_background();
 
-        glUniform4f(AmbientLightLoc,  0.2, 0.2, 0.2, 1.0);
-        glUniform4f(LightPositionLoc, 0.0, 3.0, 3.0, 1.0);
+        glUniform4f(AmbientLightLoc,  0.1f, 0.1f, 0.1f, 1.0f);
+        glUniform4f(LightPositionLoc, 0.0f, 3.0f, 3.0f, 1.0f);
 
         glUseProgram(0);
     }
@@ -142,6 +144,7 @@ OVR_SDL2_obj::OVR_SDL2_obj(int argc, char **argv) : program(0)
     // Set the necessary OpenGL state.
 
     glEnable(GL_DEPTH_TEST);
+    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 }
 
 
