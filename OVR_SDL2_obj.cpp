@@ -32,26 +32,19 @@ const char *vert_src = R"(
 
     in vec4 vPosition;
     in vec3 vNormal;
-    in vec3 vTangent;
     in vec2 vTexCoord;
 
     out vec3 fView;
     out vec3 fLight;
+    out vec3 fNormal;
     out vec2 fTexCoord;
 
     void main()
     {
-        // Tangent space vectors give columns of the eye-to-tangent matrix.
-
-        vec3 N = NormalMatrix * vNormal;
-        vec3 T = NormalMatrix * vTangent;
-        mat3 M = transpose(mat3(T, cross(N, T), N));
-
-        // Compute the per-fragment attributes.
-
-        fView     =  M * vec3(ModelViewMatrix * vPosition);
-        fLight    =  M * vec3(ModelViewMatrix * LightPosition);
-        fTexCoord =  vTexCoord;
+        fView     = vec3(ModelViewMatrix * vPosition);
+        fLight    = vec3(ModelViewMatrix * LightPosition);
+        fNormal   = vec3(NormalMatrix    * vNormal);
+        fTexCoord = vTexCoord;
 
         gl_Position = ProjectionMatrix * ModelViewMatrix * vPosition;
     }
@@ -60,29 +53,31 @@ const char *vert_src = R"(
 const char *frag_src = R"(
     #version 150
 
-    uniform vec4 AmbientLight;
+    uniform vec3 AmbientLight;
 
-    uniform sampler2D NormalTexture;
+    uniform vec4 DiffuseColor;
+    uniform vec4 SpecularColor;
+
     uniform sampler2D DiffuseTexture;
     uniform sampler2D SpecularTexture;
 
     in vec3 fView;
     in vec3 fLight;
+    in vec3 fNormal;
     in vec2 fTexCoord;
 
     out vec4 fOutput;
 
     void main()
     {
-        // Sample the textures.
+        // Sample the materials.
 
-        vec4 tN = texture(NormalTexture,   fTexCoord);
-        vec4 tD = texture(DiffuseTexture,  fTexCoord);
-        vec4 tS = texture(SpecularTexture, fTexCoord);
+        vec3 cD = texture(DiffuseTexture,  fTexCoord).rgb + DiffuseColor.rgb;
+        vec3 cS = texture(SpecularTexture, fTexCoord).rgb + SpecularColor.rgb;
 
         // Determine the per-fragment lighting vectors.
 
-        vec3 N = normalize(2.0 * tN.xyz - 1.0);
+        vec3 N = normalize(fNormal);
         vec3 L = normalize(fLight);
         vec3 V = normalize(fView);
         vec3 R = reflect(L, N);
@@ -94,8 +89,7 @@ const char *frag_src = R"(
 
         // Calculate the fragment color.
 
-        fOutput.rgb = vec3(AmbientLight * tD + kd * tD + tS * ks);
-        fOutput.a   = tD.a;
+        fOutput = vec4(AmbientLight * cD + kd * cD + ks * cS, 1.0);
     }
 )";
 
@@ -110,24 +104,24 @@ OVR_SDL2_obj::OVR_SDL2_obj(int argc, char **argv) : program(0)
     {
         glUseProgram(program);
 
-        // Query the program uniforms.
+        // Query the program uniform locations.
 
-        ProjectionMatrixLocation = glGetUniformLocation(program, "ProjectionMatrix");
-        ModelViewMatrixLocation  = glGetUniformLocation(program, "ModelViewMatrix");
-        NormalMatrixLocation     = glGetUniformLocation(program, "NormalMatrix");
-        LightPositionLocation    = glGetUniformLocation(program, "LightPosition");
-        AmbientLightLocation     = glGetUniformLocation(program, "AmbientLight");
+        ProjectionMatrixLoc = glGetUniformLocation(program, "ProjectionMatrix");
+        ModelViewMatrixLoc  = glGetUniformLocation(program, "ModelViewMatrix");
+        NormalMatrixLoc     = glGetUniformLocation(program, "NormalMatrix");
+        LightPositionLoc    = glGetUniformLocation(program, "LightPosition");
+        AmbientLightLoc     = glGetUniformLocation(program, "AmbientLight");
 
-        NormalTextureLocation    = glGetUniformLocation(program, "NormalTexture");
-        DiffuseTextureLocation   = glGetUniformLocation(program, "DiffuseTexture");
-        SpecularTextureLocation  = glGetUniformLocation(program, "SpecularTexture");
+        DiffuseColorLoc     = glGetUniformLocation(program, "DiffuseColor");
+        SpecularColorLoc    = glGetUniformLocation(program, "SpecularColor");
+        DiffuseTextureLoc   = glGetUniformLocation(program, "DiffuseTexture");
+        SpecularTextureLoc  = glGetUniformLocation(program, "SpecularTexture");
 
-        // Query the vertex attributes.
+        // Query the vertex attribute locations.
 
-        vTangentLocation         = glGetAttribLocation(program, "vTangent");
-        vNormalLocation          = glGetAttribLocation(program, "vNormal");
-        vTexCoordLocation        = glGetAttribLocation(program, "vTexCoord");
-        vPositionLocation        = glGetAttribLocation(program, "vPosition");
+        vNormalLoc   = glGetAttribLocation(program, "vNormal");
+        vTexCoordLoc = glGetAttribLocation(program, "vTexCoord");
+        vPositionLoc = glGetAttribLocation(program, "vPosition");
 
         // Load each of the OBJ models named on the command line.
 
@@ -142,14 +136,12 @@ OVR_SDL2_obj::OVR_SDL2_obj(int argc, char **argv) : program(0)
             {
                 // Configure the object's vertex attributes.
 
-                obj_set_vert_loc(o, vTangentLocation,
-                                    vNormalLocation,
-                                    vTexCoordLocation,
-                                    vPositionLocation);
+                obj_set_vert_loc(o, -1, vNormalLoc,
+                                        vTexCoordLoc,
+                                        vPositionLoc);
 
-                obj_set_prop_loc(o, OBJ_KN, -1, NormalTextureLocation,   -1);
-                obj_set_prop_loc(o, OBJ_KD, -1, DiffuseTextureLocation,  -1);
-                obj_set_prop_loc(o, OBJ_KS, -1, SpecularTextureLocation, -1);
+                obj_set_prop_loc(o, OBJ_KD, DiffuseColorLoc,  DiffuseTextureLoc,  -1);
+                obj_set_prop_loc(o, OBJ_KS, SpecularColorLoc, SpecularTextureLoc, -1);
 
                 // Position the object at the origin on the XZ plane.
 
@@ -174,8 +166,8 @@ OVR_SDL2_obj::OVR_SDL2_obj(int argc, char **argv) : program(0)
 
         // Configure the lights.
 
-        glUniform4f(AmbientLightLocation,  0.2, 0.2, 0.2, 1.0);
-        glUniform4f(LightPositionLocation, 0.2, 0.1, 0.2, 0.0);
+        glUniform4f(AmbientLightLoc,  0.2, 0.2, 0.2, 1.0);
+        glUniform4f(LightPositionLoc, 0.2, 0.1, 0.2, 0.0);
 
         glUseProgram(0);
     }
@@ -196,14 +188,14 @@ void OVR_SDL2_obj::draw()
 
     glUseProgram(program);
 
-    glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_TRUE, projection());
+    glUniformMatrix4fv(ProjectionMatrixLoc, 1, GL_TRUE, projection());
 
     for (auto i : objects)
     {
         mat4 M = view() * translation(offset) * translation(i.second);
 
-        glUniformMatrix4fv(ModelViewMatrixLocation, 1, GL_TRUE, M);
-        glUniformMatrix3fv(NormalMatrixLocation,    1, GL_TRUE, normal(M));
+        glUniformMatrix4fv(ModelViewMatrixLoc, 1, GL_TRUE, M);
+        glUniformMatrix3fv(NormalMatrixLoc,    1, GL_TRUE, normal(M));
 
         obj_render(i.first);
     }

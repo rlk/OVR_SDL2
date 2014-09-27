@@ -44,20 +44,20 @@ private:
 
     GLuint program;
 
-    GLint ProjectionMatrixLocation;
-    GLint ModelViewMatrixLocation;
-    GLint NormalMatrixLocation;
-    GLint LightPositionLocation;
-    GLint AmbientLightLocation;
+    GLint ProjectionMatrixLoc;
+    GLint ModelViewMatrixLoc;
+    GLint NormalMatrixLoc;
+    GLint LightPositionLoc;
+    GLint AmbientLightLoc;
 
-    GLint NormalTextureLocation;
-    GLint DiffuseTextureLocation;
-    GLint SpecularTextureLocation;
+    GLint DiffuseColorLoc;
+    GLint SpecularColorLoc;
+    GLint DiffuseTextureLoc;
+    GLint SpecularTextureLoc;
 
-    GLint vTangentLocation;
-    GLint vNormalLocation;
-    GLint vTexCoordLocation;
-    GLint vPositionLocation;
+    GLint vNormalLoc;
+    GLint vTexCoordLoc;
+    GLint vPositionLoc;
 
     std::map<obj *, vec3> objects;
 
