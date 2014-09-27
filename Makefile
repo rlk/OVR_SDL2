@@ -36,6 +36,9 @@ OVR_SDL2_room : OVR_SDL2_app.o OVR_SDL2_nav.o OVR_SDL2_room.o
 .cpp.o :
 	$(CXX) $(OPT) $(INC) -c $<
 
+.c.o :
+	$(CC) $(OPT) $(INC) -c $<
+
 # Clean up all binaries
 
 clean :
