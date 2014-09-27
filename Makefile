@@ -4,7 +4,7 @@ OVR= /usr/local/OculusSDK/LibOVR
 # Configure for OS X
 
 ifeq ($(shell uname), Darwin)
-	CXX= c++ -F/Library/Frameworks
+	CXX= c++ -std=c++11 -F/Library/Frameworks
 	INC= -I$(OVR)/Include -I$(OVR)/Src
 	LIB= -L$(OVR)/Lib/Mac/Release -lovr -framework SDL2 \
 										-framework IOKit \

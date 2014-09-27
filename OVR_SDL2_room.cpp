@@ -139,6 +139,63 @@ struct block blocks[] = {
     { -1.89, -0.06, -2.80, +1.89, +0.00, +0.91, 0.7, 0.7, 0.7, 1.6, 0.50, 0.8 },
 };
 
+const char *vert_src = R"(
+    #version 150
+
+    uniform mat4 ProjectionMatrix;
+    uniform mat4 ModelViewMatrix;
+    uniform mat3 NormalMatrix;
+
+    in  vec4 vPosition;
+    in  vec3 vNormal;
+    in  vec3 vColor;
+    in  vec3 vChecker;
+
+    out vec4 fPosition;
+    out vec3 fNormal;
+    out vec3 fColor;
+    out vec3 fChecker;
+    out vec3 fCoord;
+
+    void main()
+    {
+        fPosition = ModelViewMatrix * vPosition;
+        fNormal   = NormalMatrix    * vNormal;
+        fColor    =                   vColor;
+        fChecker  =                   vChecker;
+        fCoord    =                   vPosition.xyz;
+
+        gl_Position = ProjectionMatrix * ModelViewMatrix * vPosition;
+    }
+)";
+
+const char *frag_src = R"(
+    #version 150
+
+    uniform vec4 LightPosition;
+    uniform vec3 AmbientLight;
+
+    in vec4 fPosition;
+    in vec3 fNormal;
+    in vec3 fColor;
+    in vec3 fChecker;
+    in vec3 fCoord;
+
+    out vec4 fOutput;
+
+    void main()
+    {
+        vec3  L = normalize(LightPosition.xyz - fPosition.xyz);
+        vec3  N = normalize(fNormal);
+
+        vec3  c = step(fChecker.y, fract(fCoord * fChecker.x));
+        float k = c.x + c.z - 2.0 * c.x * c.z;
+        float d = max(dot(L, N), 0.0);
+
+        fOutput = vec4(mix(fColor, fColor * fChecker.z, k) * (d + AmbientLight), 1.0);
+    }
+)";
+
 //------------------------------------------------------------------------------
 
 /// Triangulate and append the vertices of a block face onto the vertex array.
@@ -231,7 +288,8 @@ OVR_SDL2_room::OVR_SDL2_room()
 
     // Initialize a shader to render the vertex array.
 
-    if ((program = init_program("vertex.glsl", "fragment.glsl")))
+    if ((program = init_program(init_shader(GL_VERTEX_SHADER,   vert_src),
+                                init_shader(GL_FRAGMENT_SHADER, frag_src))))
     {
         glUseProgram(program);
 
@@ -280,13 +338,13 @@ OVR_SDL2_room::~OVR_SDL2_room()
 
 void OVR_SDL2_room::draw()
 {
-    mat4 P = projection();
-    mat4 V = view();
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(program);
     glBindVertexArray(vao);
+
+    mat4 P = projection();
+    mat4 V = view();
 
     glUniformMatrix4fv(ProjectionMatrixLoc, 1, GL_TRUE, P);
     glUniformMatrix4fv(ModelViewMatrixLoc,  1, GL_TRUE, V);
