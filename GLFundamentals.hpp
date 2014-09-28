@@ -34,7 +34,14 @@
 
 #ifdef __APPLE__
 #  include <OpenGL/gl3.h>
-#else
+#endif
+
+#ifdef __linux__
+#  include <GL/glew.h>
+#endif
+
+#ifdef _WIN32
+#  define NOMINMAX
 #  include <GL/glew.h>
 #endif
 

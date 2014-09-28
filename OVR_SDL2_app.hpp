@@ -23,14 +23,14 @@
 
 #include <vector>
 
+#include "GLFundamentals.hpp"
+#include "GLFramebuffer.hpp"
+
 #undef static_assert
 #include <OVR.h>
 #include <OVR_CAPI_GL.h>
 
 #include <SDL2/SDL.h>
-
-#include "GLFundamentals.hpp"
-#include "GLFramebuffer.hpp"
 
 using namespace gl;
 
