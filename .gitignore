@@ -1,3 +1,7 @@
 *.o
-OVR_SDL2_obj
-OVR_SDL2_room
+*.sdf
+*.suo
+*.vcxproj.user
+*.vcxproj.filters
+Debug
+Release
