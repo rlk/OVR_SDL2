@@ -31,6 +31,9 @@ OVR_SDL2_nav::OVR_SDL2_nav() :
     move_F(false),
     move_B(false)
 {
+    // FPS-style mouselook requires relative mouse motion.
+
+    SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 OVR_SDL2_nav::~OVR_SDL2_nav()
