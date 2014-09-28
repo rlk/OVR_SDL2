@@ -139,7 +139,7 @@ struct block blocks[] = {
     { -1.89, -0.06, -2.80, +1.89, +0.00, +0.91, 0.7, 0.7, 0.7, 0.5, 0.50, 0.8 },
 };
 
-const char *vert_src = R"(
+static const char *vert_src = R"(
     #version 150
 
     uniform mat4 ProjectionMatrix;
@@ -169,7 +169,7 @@ const char *vert_src = R"(
     }
 )";
 
-const char *frag_src = R"(
+static const char *frag_src = R"(
     #version 150
 
     uniform vec4 LightPosition;

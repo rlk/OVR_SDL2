@@ -18,11 +18,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#include <algorithm>
+
 #include "OVR_SDL2_obj.hpp"
 
 //------------------------------------------------------------------------------
 
-const char *vert_src = R"(
+static const char *vert_src = R"(
     #version 150
 
     uniform mat4 ProjectionMatrix;
@@ -52,7 +54,7 @@ const char *vert_src = R"(
     }
 )";
 
-const char *frag_src = R"(
+static const char *frag_src = R"(
     #version 150
 
     uniform vec4 AmbientLight;
