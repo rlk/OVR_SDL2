@@ -218,10 +218,10 @@ void OVR_SDL2_obj::init_objects(int argc, char **argv)
 
             obj_bound(o, b);
 
-            objects[o] = vec3(x - b[0], -b[1], -0.5 * (b[5] + b[2]));
+            objects[o] = vec3(x - b[0], -b[1], -0.5f * (b[5] + b[2]));
 
             w = x + (b[3] - b[0]);
-            x = x + (b[3] - b[0]) * 1.25;
+            x = x + (b[3] - b[0]) * 1.25f;
 
             y = std::max(y, b[4] - b[1]);
             z = std::max(z, b[5] - b[2]);
@@ -230,8 +230,8 @@ void OVR_SDL2_obj::init_objects(int argc, char **argv)
 
     // Position the scene and camera.
 
-    offset   = vec3(-0.5 * w, 0.0, 0.0);
-    position = vec3(0.0, y, z);
+    offset   = vec3(-0.5f * w, 0.0f, 0.0f);
+    position = vec3(0.0f, y, z);
 }
 
 /// Generate a checkerboard background. For simplicity, the OBJ module.
@@ -252,8 +252,8 @@ void OVR_SDL2_obj::init_background()
             {
                 int k = obj_add_vert(o);
 
-                v[0] = j - 0.5 * m;
-                v[2] = i - 0.5 * m;
+                v[0] = j - 0.5f * m;
+                v[2] = i - 0.5f * m;
 
                 obj_set_vert_v(o, k, v);
                 obj_set_vert_n(o, k, n);

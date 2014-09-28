@@ -37,10 +37,10 @@
 
 /*============================================================================*/
 
-#define index_t       unsigned int
+#define index_t int
 #define GL_INDEX_T GL_UNSIGNED_INT
 /*
-#define index_t       unsigned short
+#define index_t short
 #define GL_INDEX_T GL_UNSIGNED_SHORT
 */
 /*============================================================================*/
@@ -479,7 +479,7 @@ static void read_alpha(obj *O, int mi, int ki, const char *line)
 
     obj_get_mtrl_c(O, mi, ki, c);
     sscanf(line, "%f", &t);
-    c[3] = 1.0 - t;
+    c[3] = 1.0f - t;
     obj_set_mtrl_c(O, mi, ki, c);
 }
 

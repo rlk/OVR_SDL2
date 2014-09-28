@@ -322,9 +322,9 @@ OVR_SDL2_room::OVR_SDL2_room()
     }
     glBindVertexArray(0);
 
-    position = vec3(0.0, 1.3, 0.0);
-    ambient  = vec3(0.2, 0.2, 0.2);
-    light    = vec4(0.0, 2.1, 0.0, 1.0);
+    position = vec3(0.0f, 1.3f, 0.0f);
+    ambient  = vec3(0.2f, 0.2f, 0.2f);
+    light    = vec4(0.0f, 2.1f, 0.0f, 1.0f);
 
     glClearColor(0.3f, 0.6f, 0.9f, 0.0f);
 

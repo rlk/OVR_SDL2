@@ -220,14 +220,14 @@ namespace gl
 
     inline GLfloat to_radians(GLfloat degrees)
     {
-        return degrees * 0.01745329;
+        return degrees * 0.01745329f;
     }
 
     /// Convent an angle in radians to an angle in degrees.
 
     inline GLfloat to_degrees(GLfloat radians)
     {
-        return radians * 57.2957795;
+        return radians * 57.2957795f;
     }
 
     //--------------------------------------------------------------------------

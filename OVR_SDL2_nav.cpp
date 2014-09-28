@@ -85,7 +85,7 @@ void OVR_SDL2_nav::keyboard(int key, bool down, bool repeat)
 
 void OVR_SDL2_nav::mouse_motion(int dx, int dy)
 {
-    rotation += 0.5 * dx;
+    rotation += 0.5f * dx;
 }
 
 /// Handle gamepad button press or release.
@@ -107,18 +107,18 @@ void OVR_SDL2_nav::game_button(int device, int button, bool down)
 
 void OVR_SDL2_nav::game_axis(int device, int axis, float value)
 {
-    double k = copysign(value * value, value);
+    float k = copysignf(value * value, value);
 
     switch (axis)
     {
         case SDL_CONTROLLER_AXIS_LEFTX:
-            dposition[0] = (fabs(k) > 0.1f) ? k : 0.0f;
+            dposition[0] = (fabsf(k) > 0.1f) ? k : 0.0f;
             break;
         case SDL_CONTROLLER_AXIS_LEFTY:
-            dposition[2] = (fabs(k) > 0.1f) ? k : 0.0f;
+            dposition[2] = (fabsf(k) > 0.1f) ? k : 0.0f;
             break;
         case SDL_CONTROLLER_AXIS_RIGHTX:
-            drotation    = (fabs(k) > 0.1f) ? k : 0.0f;
+            drotation    = (fabsf(k) > 0.1f) ? k : 0.0f;
             break;
     }
 }

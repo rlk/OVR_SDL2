@@ -218,10 +218,10 @@ void OVR_SDL2_app::dispatch(SDL_Event& e)
     switch (e.type)
     {
         case SDL_KEYDOWN:
-            keyboard(e.key.keysym.scancode, true,  e.key.repeat);
+            keyboard(e.key.keysym.scancode, true,  (e.key.repeat != 0));
             break;
         case SDL_KEYUP:
-            keyboard(e.key.keysym.scancode, false, e.key.repeat);
+            keyboard(e.key.keysym.scancode, false, (e.key.repeat != 0));
             break;
         case SDL_MOUSEBUTTONDOWN:
             mouse_button(e.button.button, true);
