@@ -4,6 +4,14 @@ This is a set of minimal cross-platform example applications for the Oculus Rift
 
 These examples share a simple SDL2 application framework that provides an OpenGL 3.2 Core Profile and an FPS-style interaction. Their modular design enables easy reuse and its license permits you to copy it for any purpose.
 
+## Usage
+
+`ESC` exits.
+
+Keyboard-mouse navigation uses `WASD` to move and the mouse to turn. `Space` moves up and `C` moves down.
+
+Gamepad navigation moves with the left stick and turns with the right. Button A moves up and button B moves down.
+
 ## Structure
 
 - `OVR_SDL2_app` implements a cross-platform VR application base class using SDL2 and the Oculus SDK.
@@ -20,17 +28,19 @@ These examples share a simple SDL2 application framework that provides an OpenGL
 
 ## Building
 
-### Under Windows
+### Windows
 
 A Visual Studio 2013 solution is provided. It contains projects for `OVR_SDL2_room` and `OVR_SDL2_obj`. Check the "VC++ Directories" settings in each project to ensure that SDL2, the Oculus SDK, and GLEW can be located.
 
-### Under OSX
+If building a project from scratch, link `SDL2.lib`; `SDL2main.lib`; `libovr.lib`; `glew32.lib`; `opengl32.lib`; `ws2_32.lib`; `winmm.lib`
 
-The OSX build does *not* require GLEW. Install the [SDL2](http://libsdl.org/download-2.0.php) framework to `/Library/Frameworks`.
+### OS X
 
-Follow the Linux directions...
+The OS X build does *not* require GLEW.
 
-### Under Linux
+Install the [SDL2](http://libsdl.org/download-2.0.php) framework to `/Library/Frameworks` and follow the Linux directions...
+
+### Linux
 
 Check the `Makefile` to ensure that the following definition gives the correct location for the Oculus SDK.
 
@@ -40,10 +50,3 @@ Build using `make`
 
 		$ make
 
-## Usage
-
-`ESC` exits.
-
-Keyboard-mouse navigation uses `WASD` to move and the mouse to turn. `Space` moves up and `C` moves down.
-
-Gamepad navigation moves with the left stick and turns with the right. Button A moves up and button B moves down.
