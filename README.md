@@ -2,7 +2,7 @@
 
 This is a set of minimal cross-platform example applications for the Oculus Rift written in C++ and depending only on SDL2, the Oculus VR SDK version 0.4, and GLEW.
 
-These examples share a simple SDL2 application framework that provides an OpenGL 3.2 Core Profile and an FPS-style interaction. Their modular design enables easy reuse and its license permits you to copy it for any purpose.
+These examples share a simple SDL2 application framework that provides an OpenGL 3.2 Core Profile and an FPS-style interaction. Their modular design enables easy reuse and the license permits you to copy them for any purpose.
 
 ## Usage
 
@@ -25,6 +25,16 @@ Gamepad navigation moves with the left stick and turns with the right. Button A 
 - `GLFundamentals` implements the necessary OpenGL functionality including matrix mathematics and shader handling.
 
 - `GLFramebuffer` encapsulates an OpenGL framebuffer object.
+
+## Screenshots
+
+- `OVR_SDL2_room`
+
+	![](etc/OVR_SDL2_room.jpg)
+
+- `OVR_SDL2_obj`
+
+	![](etc/OVR_SDL2_obj.jpg)
 
 ## Building
 
