@@ -46,6 +46,8 @@ Gamepad navigation moves with the left stick and turns with the right. Button A 
 
 ### Windows
 
+Windows executables may be [downloaded here](https://dl.dropboxusercontent.com/u/28320415/OVR_SDL2-20140930-win.zip).
+
 A Visual Studio 2013 solution is provided. It contains projects for `OVR_SDL2_room` and `OVR_SDL2_obj`. Check the "VC++ Directories" settings in each project to ensure that SDL2, the Oculus SDK, and GLEW can be located.
 
 If building a project from scratch, link `SDL2.lib`; `SDL2main.lib`; `libovr.lib`; `glew32.lib`; `opengl32.lib`; `ws2_32.lib`; `winmm.lib`
