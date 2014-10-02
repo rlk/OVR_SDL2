@@ -4,6 +4,10 @@ This is a set of minimal cross-platform example applications for the Oculus Rift
 
 These examples share a simple SDL2 application framework that provides an OpenGL 3.2 Core Profile and an FPS-style interaction. Their modular design enables easy reuse and the license permits you to copy them for any purpose.
 
+The Oculus SDK continues to evolve as of this writing (Oct 2014). The documentation lags behind the implementation. `OVR_SDL2_app` is a by-the-book implementation of an Oculus app, as described by the Developer's Guide, but a great deal of digging through the headers was necessary to complete the job. That's all encoded here.
+
+This code also makes good use of SDL2, particularly the new game controller API, which presents all inputs as though they came from an XBox controller. The SDL2 event loop also delivers controller connection and disconnection events, which this code uses supports completely.
+
 ## Usage
 
 `ESC` exits.
@@ -11,6 +15,8 @@ These examples share a simple SDL2 application framework that provides an OpenGL
 Keyboard-mouse navigation uses `WASD` to move and the mouse to turn. `Space` moves up and `C` moves down.
 
 Gamepad navigation moves with the left stick and turns with the right. Button A moves up and button B moves down.
+
+`OVR_SDL2_obj` takes a list of OBJ input files on the command line.
 
 ## Structure
 

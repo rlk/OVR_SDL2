@@ -62,7 +62,7 @@ bool OVR_SDL2_app::init_SDL(int x, int y, int w, int h)
         int f = SDL_WINDOW_BORDERLESS | SDL_WINDOW_OPENGL;
 
         // Choose an OpenGL 3.2 Core Profile. This choice is arbitrary, and
-        // and later version may be substituted.
+        // any later version supported by the hardware may be substituted.
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
