@@ -147,6 +147,9 @@ void OVR_SDL2_app::conf_OVR()
                                               | ovrDistortionCap_Overdrive,
                                                 hmd->DefaultEyeFov, erd);
 
+    offset[0] = erd[0].HmdToEyeViewOffset;
+    offset[1] = erd[1].HmdToEyeViewOffset;
+
     // Determine the buffer size required by each eye of the current HMD.
 
     ovrSizei size[2];
@@ -199,10 +202,11 @@ void OVR_SDL2_app::run()
 
         ovrHmd_BeginFrame(hmd, 0);
         {
+            ovrHmd_GetEyePoses(hmd, 0, offset, pose, NULL);
+
             for (int i = 0; i < 2; i++)
             {
                 eye = hmd->EyeRenderOrder[i];
-                pose[eye] = ovrHmd_GetEyePose(hmd, eye);
                 buffer[eye]->bind();
                 draw();
             }
@@ -345,19 +349,14 @@ mat4 OVR_SDL2_app::view() const
     OVR::Quatf q = OVR::Quatf(pose[eye].Orientation);
     mat4 O = getMatrix4f(OVR::Matrix4f(q.Inverted()));
 
-    // Offset of the eye from the center of the head
-
-    mat4 E = translation(vec3(erd[eye].ViewAdjust.x,
-                              erd[eye].ViewAdjust.y,
-                              erd[eye].ViewAdjust.z));
-
     // Offset of the head from the center of the world
 
     mat4 P = translation(vec3(-pose[eye].Position.x,
                               -pose[eye].Position.y,
                               -pose[eye].Position.z));
 
-    return E * O * P;
+    // return E * O * P;
+    return O * P;
 }
 
 //------------------------------------------------------------------------------

@@ -76,6 +76,7 @@ private:
 
     ovrHmd            hmd;
     ovrEyeType        eye;
+    ovrVector3f    offset[2];
     ovrPosef         pose[2];
     ovrEyeRenderDesc  erd[2];
     ovrTexture        tex[2];
