@@ -1,10 +1,10 @@
 # Oculus SDL2 Examples
 
-This is a set of minimal cross-platform example applications for the Oculus Rift written in C++ and depending only on SDL2, the Oculus VR SDK version 0.4, and GLEW.
+This is a set of minimal cross-platform example applications for the Oculus Rift written in C++ and depending only on SDL2, the Oculus VR SDK, and GLEW. As of this writing, the code compiles against Oculus SDK 0.4.3 beta.
 
 These examples share a simple SDL2 application framework that provides an OpenGL 3.2 Core Profile and an FPS-style interaction. Their modular design enables easy reuse and the license permits you to copy them for any purpose.
 
-The Oculus SDK continues to evolve as of this writing (Oct 2014). The documentation lags behind the implementation. `OVR_SDL2_app` is a by-the-book implementation of an Oculus app, as described by the Developer's Guide, but a great deal of digging through the headers was necessary to complete the job. That's all encoded here.
+As the Oculus SDK continues to evolve, the documentation lags behind the implementation. `OVR_SDL2_app` is a by-the-book implementation of an Oculus app, as described by the Developer's Guide, but a great deal of digging through the headers was necessary to complete the job. That's all encoded here.
 
 This code also makes good use of SDL2, particularly the new game controller API, which presents all inputs as though they came from an XBox controller. The SDL2 event loop also delivers controller connection and disconnection events, which this code uses supports completely.
 
