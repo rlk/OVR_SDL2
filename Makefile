@@ -7,19 +7,19 @@ ifeq ($(shell uname), Darwin)
 	CXX= c++ -std=c++11 -F/Library/Frameworks
 	INC= -I$(OVR)/Include -I$(OVR)/Src
 	LIB= -L$(OVR)/Lib/Mac/Release -lovr -framework SDL2 \
-										-framework IOKit \
-										-framework Foundation \
-										-framework CoreFoundation \
-										-framework CoreGraphics \
-										-framework OpenGL
+	                                    -framework IOKit \
+	                                    -framework Foundation \
+	                                    -framework CoreFoundation \
+	                                    -framework CoreGraphics \
+	                                    -framework OpenGL
 endif
 
 # Configure for Linux
 
 ifeq ($(shell uname), Linux)
-	CXX= g++
+	CXX= g++ -std=c++11
 	INC= -I$(OVR)/Include -I$(OVR)/Src
-	LIB= -L$(OVR)/Lib/Linux/Release -lovr -lSDL2 -lGLEW -lGL -lm
+	LIB= -L$(OVR)/Lib/Linux/Release/x86_64 -lovr -lSDL2 -lGLEW -lGL -lX11 -lXrandr -lm -lpthread -lrt
 endif
 
 # Link the executables

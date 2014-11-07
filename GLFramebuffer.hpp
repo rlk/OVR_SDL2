@@ -21,7 +21,7 @@
 #ifndef GLFRAMEBUFFER_HPP
 #define GLFRAMEBUFFER_HPP
 
-#include <exception>
+#include <stdexcept>
 
 #include "GLFundamentals.hpp"
 
