@@ -8,6 +8,7 @@ ifeq ($(shell uname), Darwin)
 	INC= -I$(OVR)/Include -I$(OVR)/Src
 	LIB= -L$(OVR)/Lib/Mac/Release -lovr -framework SDL2 \
 										-framework IOKit \
+										-framework Foundation \
 										-framework CoreFoundation \
 										-framework CoreGraphics \
 										-framework OpenGL
