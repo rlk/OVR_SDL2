@@ -20,6 +20,8 @@
 
 #include "OVR_SDL2_app.hpp"
 
+#include <SDL2/SDL_syswm.h>
+
 //------------------------------------------------------------------------------
 
 /// Initialize an OVR HMD and SDL2 window.
@@ -129,16 +131,26 @@ void OVR_SDL2_app::conf_OVR()
 {
     // Configure the renderer. Zeroing the configuration stucture causes all
     // display, window, and device specifications to take on current values
-    // as put in place by SDL. This trick works cross-platform, freeing us
-    // from dealing with any platform issues.
+    // as put in place by SDL. This should work cross-platform, but doesn't.
+    // A workaround is currently (0.4.3b) required under linux.
 
-    ovrGLConfig cfg;
+    SDL_SysWMinfo info;
+    ovrGLConfig   cfg;
 
-    memset(&cfg, 0, sizeof (ovrGLConfig));
+    memset(&info, 0, sizeof (SDL_SysWMinfo));
+    memset(&cfg,  0, sizeof (ovrGLConfig));
+
+    SDL_VERSION(&info.version);
+    SDL_GetWindowWMInfo(window, &info);
 
     cfg.OGL.Header.API      = ovrRenderAPI_OpenGL;
     cfg.OGL.Header.RTSize.w = hmd->Resolution.w;
     cfg.OGL.Header.RTSize.h = hmd->Resolution.h;
+
+#ifdef __linux__
+    cfg.OGL.Disp = info.info.x11.display;
+    cfg.OGL.Win  = info.info.x11.window;
+#endif
 
     // Set the configuration and receive eye render descriptors in return.
 
