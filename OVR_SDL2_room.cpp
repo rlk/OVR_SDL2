@@ -273,7 +273,7 @@ OVR_SDL2_room::OVR_SDL2_room()
 
     // Converting the array of colored blocks into a list of triangles.
 
-    for (int i = 0; i < int(sizeof (blocks) / sizeof (blocks[0])); i++)
+    for (size_t i = 0; i < sizeof (blocks) / sizeof (blocks[0]); i++)
 
         make_block(vec3(blocks[i].x0, blocks[i].y0, blocks[i].z0),
                    vec3(blocks[i].x1, blocks[i].y1, blocks[i].z1),
